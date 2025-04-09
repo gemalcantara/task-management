@@ -1,66 +1,186 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based task management system that allows users to create, organize, and track tasks with subtasks capabilities, status tracking, and soft delete functionality.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Task Management**: Create, edit, view, and delete tasks
+- **Subtasks**: Organize work by creating hierarchical task structures
+- **Status Tracking**: Track tasks with "To Do", "In Progress", and "Done" statuses
+- **Visibility Control**: Set tasks as "Draft" or "Published"
+- **Soft Delete**: Tasks are moved to trash before permanent deletion
+- **Image Attachments**: Attach images to tasks for better context
+- **Task Filtering**: Filter tasks by status, search by title, and sort results
+- **Progress Tracking**: Monitor subtask completion progress
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technology Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Framework**: Laravel
+- **Database**: MySQl
+- **Frontend**: Blade templates with CSS/JS
+- **Authentication**: Laravel's built-in auth system
+- **Storage**: Laravel's filesystem for image handling
+- **Task Scheduling**: Laravel's command scheduler for maintenance tasks
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone the repository:
+   ```
+   git clone [repository-url]
+   cd task-management
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. Install dependencies:
+   ```
+   composer install
+   npm install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Set up environment:
+   ```
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Laravel Sponsors
+4. Configure the database in `.env` file
+   ```
+   DB_CONNECTION=sqlite
+   DB_DATABASE=/absolute/path/to/database/database.sqlite
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. Run migrations and seeders:
+   ```
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-### Premium Partners
+6. Compile assets:
+   ```
+   npm run build
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+7. Create storage symlinks:
+   ```
+   php artisan storage:link
+   ```
+
+8. Start the development server:
+   ```
+   php artisan serve
+   ```
+
+## Project Structure
+
+### Models
+
+- **Task**: Represents a task with soft delete capability
+  - Attributes:
+    - title
+    - content
+    - status (to_do, in_progress, done)
+    - visibility (draft, published)
+    - image
+    - user_id
+    - parent_id
+  - Relationships:
+    - Belongs to a User
+    - Can have a parent Task
+    - Can have multiple subtasks
+
+- **User**: Standard Laravel user model
+
+### Controllers
+
+- **TaskController**: Handles all task-related operations
+  - index: List tasks with filtering and pagination
+  - create/store: Create new tasks/subtasks
+  - show: View task details and subtasks
+  - edit/update: Update task information
+  - destroy: Soft-delete tasks
+  - toggleStatus: Change task status (to_do → in_progress → done)
+  - toggleVisibility: Switch between draft/published states
+
+### Commands
+
+- **PurgeDeletedTasks**: Permanently removes trashed tasks after a specified period
+  - Usage: `php artisan tasks:purge [days]`
+  - Default: 30 days
+
+### Observers
+
+- **TaskObserver**: Monitors and reacts to task model events
+
+## Database Schema
+
+### Tasks Table
+- id (primary key)
+- title (string)
+- content (text)
+- status (string): to_do, in_progress, done
+- visibility (string): draft, published
+- image (string, nullable): path to task image
+- user_id (foreign key): references users table
+- parent_id (foreign key, nullable): references tasks table for subtasks
+- created_at (timestamp)
+- updated_at (timestamp)
+- deleted_at (timestamp, nullable): for soft deletes
+
+### Users Table
+- Standard Laravel users table with authentication fields
+
+## Task Management Workflow
+
+1. **Creating Tasks**:
+   - Main tasks can be created from the tasks index page
+   - Subtasks can be created from a parent task's detail page
+
+2. **Task Status Flow**:
+   - Tasks start as "To Do"
+   - Can be moved to "In Progress"
+   - Finally marked as "Done"
+   - Status can be toggled directly from task listings
+
+3. **Visibility Control**:
+   - Tasks can be kept as "Draft" during preparation
+   - Published when ready to be shared/implemented
+
+4. **Task Deletion**:
+   - When deleted, tasks are moved to trash (soft deleted)
+   - Permanently removed after specified days by scheduled command
+
+## Maintenance
+
+### Scheduled Commands
+
+To enable automatic purging of deleted tasks, add this to your server's crontab:
+
+```
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+This will run the scheduler which includes the `tasks:purge` command on its configured schedule.
+
+## Development Guidelines
+
+### Adding New Features
+
+1. Create appropriate database migrations if needed
+2. Update or create models with proper relationships and attributes
+3. Create or modify controllers to handle new functionality
+4. Create blade views for any new UI components
+5. Add routes in web.php
+6. Write tests for new functionality
+
+### Coding Standards
+
+- Follow PSR-12 coding standards
+- Use Laravel naming conventions
+- Document all classes and methods with PHPDoc
+- Use type hints where appropriate
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Create a feature branch
+2. Make changes
+3. Ensure tests pass
+4. Submit a pull request
