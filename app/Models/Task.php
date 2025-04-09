@@ -56,7 +56,7 @@ class Task extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->image ? asset($this->image) : "https://placehold.co/600x300?text=Image\nUnavailable"
+            get: fn () => $this->image ? asset($this->image) : 'https://placehold.co/600x300?text=Image\nUnavailable'
         );
     }
 

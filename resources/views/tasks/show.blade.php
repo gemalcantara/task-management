@@ -54,19 +54,19 @@
                     <div class="card-footer mt-auto">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group" role="group">
-                                <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-primary">
+                                <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
                                     data-bs-target="#deleteModal">
                                     <i class="bi bi-trash"></i> Move to trash
                                 </button>
                                 @if ($task->parent_id)
-                                    <a href="{{ route('tasks.show', $task->parent_id) }}" class="btn btn-secondary">
+                                    <a href="{{ route('tasks.show', $task->parent_id) }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-left"></i> Back to Parent
                                     </a>
                                 @else
-                                    <a href="{{ route('tasks.index') }}" class="btn btn-secondary">
+                                    <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-left"></i> Back to List
                                     </a>
                                 @endif
@@ -133,7 +133,7 @@
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $subtask->title }}</h5>
-                                    <p class="card-text">{{ $subtask->content }}</p>
+                                    <p class="card-text content">{{ $subtask->content }}</p>
                                 </div>
                             </div>
                             <div class="card-footer">

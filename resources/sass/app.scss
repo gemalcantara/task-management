@@ -67,3 +67,9 @@
 .task-view .card-footer {
     margin-top: auto;
 }
+.content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

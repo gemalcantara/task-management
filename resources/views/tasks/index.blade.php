@@ -3,16 +3,6 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-between mb-4">
-            <div class="col-md-4">
-                <h2>Tasks</h2>
-            </div>
-            <div class="col-md-4 text-end">
-                <a href="{{ route('tasks.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus"></i> Create Task
-                </a>
-            </div>
-        </div>
-        <div class="row justify-content-between mb-4">
             <div class="col-md-8">
                 <form action="{{ route('tasks.index') }}" method="GET" class="row row-cols-lg-auto g-3">
                     <div class="col-12">
@@ -51,6 +41,8 @@
                                 per page</option>
                             <option value="12" {{ request('paginate') == 12 ? 'selected' : '' }}>12 per page</option>
                             <option value="24" {{ request('paginate') == 24 ? 'selected' : '' }}>24 per page</option>
+                            <option value="48" {{ request('paginate') == 48 ? 'selected' : '' }}>48 per page</option>
+                            <option value="100" {{ request('paginate') == 100 ? 'selected' : '' }}>100 per page</option>
                         </select>
                     </div>
                     @if (request('search') || request('status') || request('sort') || request('paginate'))
@@ -61,6 +53,11 @@
                         </div>
                     @endif
                 </form>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{{ route('tasks.create') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-circle"></i> Create Task
+                </a>
             </div>
         </div>
 
@@ -85,7 +82,7 @@
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $task->title }}</h5>
-                                    <p class="card-text">{{ $task->content }}</p>
+                                    <p class="card-text content">{{ $task->content }}</p>
 
                                     @if ($task->subtask->count() > 0)
                                         @php
