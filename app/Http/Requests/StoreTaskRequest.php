@@ -11,7 +11,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true; // Allow authenticated users to create tasks
     }
 
     /**
@@ -22,7 +22,12 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:100|unique:tasks',
+            'content' => 'required|string',
+            'status' => 'required|string|in:to_do,in_progress,done',
+            'visibility' => 'required|string|in:draft,published',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'parent_id' => 'nullable|exists:tasks,id',
         ];
     }
 }

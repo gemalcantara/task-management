@@ -8,13 +8,14 @@ Auth::routes();
 
 // Public Routes
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/tasks');
+    }
     return view('auth.login');
 });
 
 // Protected Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    
-    // Task Routes - will be implemented later
-    // Route::resource('tasks', App\Http\Controllers\TaskController::class);
+    Route::get('/', [App\Http\Controllers\TaskController::class, 'index']);
+    Route::resource('tasks', App\Http\Controllers\TaskController::class);
 });
