@@ -10,23 +10,16 @@ use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
-     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the tasks.
-     */
     public function index(Request $request)
     {
         //
-        $perPage = $request->input('paginate', 6); // Default to 6 if not provided
+        $perPage = $request->input('paginate', 6); 
         $query = Task::query();
 
         if ($request->filled('search')) {
@@ -61,9 +54,6 @@ class TaskController extends Controller
         return view('tasks.index', compact('tasks'));
     }
 
-    /**
-     * Show the form for creating a new task.
-     */
     public function create(Request $request)
     {
         $dropdowns = [
@@ -78,10 +68,8 @@ class TaskController extends Controller
             ],
         ];
         
-        // Get parent tasks for dropdown
         $parentTasks = Task::mainTask()->ownTask()->pluck('title', 'id');
         
-        // Handle parent_id parameter when creating a subtask from the show page
         $selectedParentId = $request->parent_id;
         $parentTask = null;
         
@@ -92,16 +80,11 @@ class TaskController extends Controller
         return view('tasks.create', compact('dropdowns', 'parentTasks', 'selectedParentId', 'parentTask'));
     }
 
-    /**
-     * Store a newly created task.
-     */
     public function store(StoreTaskRequest $request)
     {
-        // Create new task
         $task = new Task($request->validated());
         $task->user_id = auth()->id();
-        
-        // Handle image upload if provided
+
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('tasks', 'public');
             $task->image = 'storage/' . $path;
@@ -109,7 +92,6 @@ class TaskController extends Controller
         
         $task->save();
         
-        // Determine redirect based on whether the task is a subtask
         if ($task->parent_id) {
             return redirect()->route('tasks.show', $task->parent_id)
                 ->with('success', 'Subtask created successfully.');
@@ -118,21 +100,13 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')
             ->with('success', 'Task created successfully.');
     }
-
-    /**
-     * Display the specified task.
-     */
     public function show(Task $task)
     {
-        // Load subtasks for this task if any
         $subtasks = $task->subtask()->ownTask()->with('user')->get();
         
         return view('tasks.show', compact('task', 'subtasks'));
     }
 
-    /**
-     * Show the form for editing the specified task.
-     */
     public function edit(Task $task)
     {
         $dropdowns = [
@@ -147,29 +121,20 @@ class TaskController extends Controller
             ],
         ];
         
-        // Get parent tasks for dropdown (excluding itself and its children)
         $parentTasks = Task::whereNull('parent_id')
             ->where('id', '!=', $task->id)
             ->pluck('title', 'id');
             
         return view('tasks.edit', compact('task', 'dropdowns', 'parentTasks'));
     }
-
-    /**
-     * Update the specified resource in tas.
-     */
     public function update(UpdateTaskRequest $request, Task $task)
     {
         $task->fill($request->validated());
         
-        // Handle image upload if provided
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($task->image) {
                 Storage::disk('public')->delete(str_replace('storage/', '', $task->image));
             }
-            
-            // Store new image
             $path = $request->file('image')->store('tasks', 'public');
             $task->image = 'storage/' . $path;
         }
@@ -180,17 +145,12 @@ class TaskController extends Controller
             ->with('success', 'Task updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Task $task)
     {
-        //
         if ($task->image) {
             Storage::disk('public')->delete(str_replace('storage/', '', $task->image));
         }
         
-        // Get parent ID before deleting for proper redirect
         $parentId = $task->parent_id;
         
         $task->delete();
@@ -205,25 +165,19 @@ class TaskController extends Controller
             ->with('success', 'Task deleted successfully.');
     }
 
-    /**
-     * Toggle task status between to_do, in_progress, and done.
-     */
     public function toggleStatus(Request $request, Task $task)
     {
         $currentStatus = $task->status;
         
-        // Define next status in the workflow
         $statusFlow = [
             'to_do' => 'in_progress',
             'in_progress' => 'done',
             'done' => 'to_do'
         ];
         
-        // If a specific status is requested, use that
         if ($request->has('status') && in_array($request->status, array_keys($statusFlow))) {
             $task->status = $request->status;
         } else {
-            // Otherwise, move to next status in flow
             $task->status = $statusFlow[$currentStatus] ?? 'to_do';
         }
         
@@ -232,9 +186,6 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Task status updated to ' . ucwords(str_replace('_', ' ', $task->status)) . '.');
     }
     
-    /**
-     * Toggle task visibility between draft and published.
-     */
     public function toggleVisibility(Task $task)
     {
         $task->visibility = $task->visibility === 'Draft' ? 'published' : 'draft';

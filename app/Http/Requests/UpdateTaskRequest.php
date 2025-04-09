@@ -6,12 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTaskRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        // Check if the current user is the owner of the task
         return $this->task->user_id === auth()->id();
     }
 

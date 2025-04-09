@@ -80,11 +80,6 @@ class Task extends Model
         );
     }
     
-    /**
-     * Calculate the progress of subtasks completion
-     *
-     * @return array
-     */
     public function getSubtaskProgress()
     {
         $subtasks = $this->subtask()->ownTask()->get();
@@ -108,11 +103,6 @@ class Task extends Model
         ];
     }
     
-    /**
-     * Check if all subtasks are marked as done
-     *
-     * @return bool
-     */
     public function areAllSubtasksDone()
     {
         $subtasks = $this->subtask()->ownTask()->get();

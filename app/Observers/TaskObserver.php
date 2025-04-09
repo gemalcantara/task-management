@@ -54,7 +54,6 @@ class TaskObserver
      */
     private function updateParentTaskStatus(Task $task): void
     {
-        // Only process if this is a subtask
         if (!$task->parent_id) {
             return;
         }
@@ -62,7 +61,6 @@ class TaskObserver
         $parent = Task::find($task->parent_id);
         if ($parent && $parent->areAllSubtasksDone() && $parent->status !== 'done') {
             $parent->status = 'done';
-            // Skip observer to prevent infinite loop
             $parent->saveQuietly();
         }
     }
