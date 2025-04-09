@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes; 
+use App\Observers\TaskObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
+
+#[ObservedBy([TaskObserver::class])]
 class Task extends Model
 {
     use HasFactory, SoftDeletes;
@@ -75,4 +80,47 @@ class Task extends Model
         );
     }
     
+    /**
+     * Calculate the progress of subtasks completion
+     *
+     * @return array
+     */
+    public function getSubtaskProgress()
+    {
+        $subtasks = $this->subtask()->ownTask()->get();
+        
+        if ($subtasks->count() === 0) {
+            return [
+                'total' => 0,
+                'completed' => 0,
+                'percent' => 0
+            ];
+        }
+        
+        $completed = $subtasks->where('status', 'done')->count();
+        $total = $subtasks->count();
+        $percent = ($total > 0) ? round(($completed / $total) * 100) : 0;
+        
+        return [
+            'total' => $total,
+            'completed' => $completed,
+            'percent' => $percent
+        ];
+    }
+    
+    /**
+     * Check if all subtasks are marked as done
+     *
+     * @return bool
+     */
+    public function areAllSubtasksDone()
+    {
+        $subtasks = $this->subtask()->ownTask()->get();
+        
+        if ($subtasks->count() === 0) {
+            return false;
+        }
+        
+        return $subtasks->where('status', '!=', 'done')->count() === 0;
+    }
 }

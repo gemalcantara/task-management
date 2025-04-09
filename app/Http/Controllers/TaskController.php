@@ -204,4 +204,42 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')
             ->with('success', 'Task deleted successfully.');
     }
+
+    /**
+     * Toggle task status between to_do, in_progress, and done.
+     */
+    public function toggleStatus(Request $request, Task $task)
+    {
+        $currentStatus = $task->status;
+        
+        // Define next status in the workflow
+        $statusFlow = [
+            'to_do' => 'in_progress',
+            'in_progress' => 'done',
+            'done' => 'to_do'
+        ];
+        
+        // If a specific status is requested, use that
+        if ($request->has('status') && in_array($request->status, array_keys($statusFlow))) {
+            $task->status = $request->status;
+        } else {
+            // Otherwise, move to next status in flow
+            $task->status = $statusFlow[$currentStatus] ?? 'to_do';
+        }
+        
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task status updated to ' . ucwords(str_replace('_', ' ', $task->status)) . '.');
+    }
+    
+    /**
+     * Toggle task visibility between draft and published.
+     */
+    public function toggleVisibility(Task $task)
+    {
+        $task->visibility = $task->visibility === 'Draft' ? 'published' : 'draft';
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task visibility changed to ' . ucfirst($task->visibility) . '.');
+    }
 }

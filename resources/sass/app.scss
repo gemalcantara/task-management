@@ -54,3 +54,16 @@
 .task .card-footer {
     margin-top: auto;
 }
+
+.task-view {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-view .card-body {
+    flex-grow: 1;
+}
+
+.task-view .card-footer {
+    margin-top: auto;
+}
