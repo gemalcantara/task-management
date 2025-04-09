@@ -26,6 +26,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         //
+        $perPage = $request->input('paginate', 6); // Default to 6 if not provided
         $query = Task::query();
 
         if ($request->filled('search')) {
@@ -51,9 +52,11 @@ class TaskController extends Controller
                     $query->orderBy('created_at', 'desc');
                     break;
             }
+        }else{
+            $query->orderBy('created_at', 'desc');
         }
 
-        $tasks = $query->whereNull('parent_id')->with('subtask')->paginate(5);
+        $tasks = $query->mainTask()->ownTask()->with('subtask')->paginate($perPage);
 
         return view('tasks.index', compact('tasks'));
     }
@@ -76,7 +79,7 @@ class TaskController extends Controller
         ];
         
         // Get parent tasks for dropdown
-        $parentTasks = Task::whereNull('parent_id')->pluck('title', 'id');
+        $parentTasks = Task::mainTask()->ownTask()->pluck('title', 'id');
         
         // Handle parent_id parameter when creating a subtask from the show page
         $selectedParentId = $request->parent_id;
@@ -122,7 +125,7 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         // Load subtasks for this task if any
-        $subtasks = $task->subtask()->with('user')->get();
+        $subtasks = $task->subtask()->ownTask()->with('user')->get();
         
         return view('tasks.show', compact('task', 'subtasks'));
     }

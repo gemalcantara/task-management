@@ -7,12 +7,13 @@
                 <div class="card">
                     <div class="card-header">{{ __('Edit Task') }}</div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('tasks.update', $task->id) }}" enctype="multipart/form-data">
+                        <form action="{{ route('tasks.update', $task->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            @method('PUT')
+                            @method('PATCH')
 
                             <div class="row mb-3">
-                                <label for="title" class="col-md-4 col-form-label text-md-end">{{ __('Title') }}</label>
+                                <label for="title"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Title') }}</label>
                                 <div class="col-md-6">
                                     <input id="title" type="text"
                                         class="form-control @error('title') is-invalid @enderror" name="title"
@@ -31,9 +32,7 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Content') }}</label>
 
                                 <div class="col-md-6">
-                                    <textarea id="content"
-                                        class="form-control @error('content') is-invalid @enderror" name="content"
-                                        rows="5">{{ old('content', $task->content) }}</textarea>
+                                    <textarea id="content" class="form-control @error('content') is-invalid @enderror" name="content" rows="5">{{ old('content', $task->content) }}</textarea>
 
                                     @error('content')
                                         <span class="invalid-feedback" role="alert">
@@ -48,11 +47,12 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Status') }}</label>
 
                                 <div class="col-md-6">
-                                    <select id="status" class="form-select @error('status') is-invalid @enderror" 
+                                    <select id="status" class="form-select @error('status') is-invalid @enderror"
                                         name="status" required>
                                         <option value="">Select Status</option>
-                                        @foreach($dropdowns['status'] as $value => $label)
-                                            <option value="{{ $value }}" {{ old('status', $task->status) == $value ? 'selected' : '' }}>
+                                        @foreach ($dropdowns['status'] as $value => $label)
+                                            <option value="{{ $value }}"
+                                                {{ old('status', $task->status) == $value ? 'selected' : '' }}>
                                                 {{ $label }}
                                             </option>
                                         @endforeach
@@ -71,11 +71,12 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Visibility') }}</label>
 
                                 <div class="col-md-6">
-                                    <select id="visibility" class="form-select @error('visibility') is-invalid @enderror" 
+                                    <select id="visibility" class="form-select @error('visibility') is-invalid @enderror"
                                         name="visibility" required>
                                         <option value="">Select Visibility</option>
-                                        @foreach($dropdowns['visibility'] as $value => $label)
-                                            <option value="{{ $value }}" {{ old('visibility', strtolower($task->visibility)) == $value ? 'selected' : '' }}>
+                                        @foreach ($dropdowns['visibility'] as $value => $label)
+                                            <option value="{{ $value }}"
+                                                {{ old('visibility', strtolower($task->visibility)) == $value ? 'selected' : '' }}>
                                                 {{ $label }}
                                             </option>
                                         @endforeach
@@ -94,11 +95,12 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Parent Task') }}</label>
 
                                 <div class="col-md-6">
-                                    <select id="parent_id" class="form-select @error('parent_id') is-invalid @enderror" 
+                                    <select id="parent_id" class="form-select @error('parent_id') is-invalid @enderror"
                                         name="parent_id">
                                         <option value="">No Parent (Main Task)</option>
-                                        @foreach($parentTasks as $id => $title)
-                                            <option value="{{ $id }}" {{ old('parent_id', $task->parent_id) == $id ? 'selected' : '' }}>
+                                        @foreach ($parentTasks as $id => $title)
+                                            <option value="{{ $id }}"
+                                                {{ old('parent_id', $task->parent_id) == $id ? 'selected' : '' }}>
                                                 {{ $title }}
                                             </option>
                                         @endforeach
@@ -120,10 +122,12 @@
                                     <input id="image" type="file"
                                         class="form-control @error('image') is-invalid @enderror" name="image">
 
-                                    @if($task->image)
+                                    @if ($task->image)
                                         <div class="mt-2">
-                                            <img src="{{ $task->image_url }}" alt="{{ $task->title }}" class="img-thumbnail" style="max-height: 100px;">
-                                            <p class="small text-muted">Current image will be replaced if you upload a new one</p>
+                                            <img src="{{ $task->image_url }}" alt="{{ $task->title }}"
+                                                class="img-thumbnail" style="max-height: 100px;">
+                                            <p class="small text-muted">Current image will be replaced if you upload a new
+                                                one</p>
                                         </div>
                                     @endif
 

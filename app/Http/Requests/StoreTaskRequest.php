@@ -26,7 +26,7 @@ class StoreTaskRequest extends FormRequest
             'content' => 'required|string',
             'status' => 'required|string|in:to_do,in_progress,done',
             'visibility' => 'required|string|in:draft,published',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'image' => 'nullable|image|max:4096',
             'parent_id' => 'nullable|exists:tasks,id',
         ];
     }

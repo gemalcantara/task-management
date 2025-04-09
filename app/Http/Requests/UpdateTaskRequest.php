@@ -11,7 +11,8 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Check if the current user is the owner of the task
+        return $this->task->user_id === auth()->id();
     }
 
     /**
@@ -22,7 +23,12 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:100|unique:tasks,title,' . $this->route('task')->id,
+            'content' => 'nullable|string',
+            'status' => 'required|string|in:to_do,in_progress,done',
+            'visibility' => 'required|string|in:draft,published',
+            'parent_id' => 'nullable|exists:tasks,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
         ];
     }
 }

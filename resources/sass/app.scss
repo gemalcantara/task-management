@@ -35,3 +35,22 @@
     object-fit: cover;
     object-position: center;
 }
+
+.task:hover {
+    transform: scale(1.01);
+    transition: transform 0.1s;
+    cursor: pointer;
+}
+
+.task {
+    display: flex;
+    flex-direction: column;
+}
+
+.task .card-body {
+    flex-grow: 1;
+}
+
+.task .card-footer {
+    margin-top: auto;
+}

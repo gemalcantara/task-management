@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes; 
 class Task extends Model
 {
-    //
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'title',
         'content',
@@ -39,10 +41,12 @@ class Task extends Model
     {
         return $this->hasMany(Task::class, 'parent_id');
     }
-
+    public function scopeOwnTask($query){
+        return $query->where('user_id', auth()->id());
+    }
     public function scopeMainTask($query)
     {
-        return $query->whereNotNull('parent_id');
+        return $query->whereNull('parent_id');
     }
     protected function imageUrl(): Attribute
     {
